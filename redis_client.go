@@ -81,15 +81,15 @@ func (r *RESPReader) ReadObject() ([]byte, error) {
 }
 
 func (r *RESPReader) readLine() (line []byte, err error){
-
+  //pass
 }
 
 func (r *RESPReader) readBulkString(line []byte) ([]byte, error){
-
+  //pass
 }
 
 func (r *RESPReader) readArray(line []byte) ([]byte, error){
-
+  //pass
 }
 
 func main() {
