@@ -113,8 +113,28 @@ func (r *RESPReader) readBulkString(line []byte) ([]byte, error){
   return buf, nil
 }
 
+func (r *RESPReader) getCount(line []byte) (int, error) {
+  end := bytes.IndexByte(line, '\r')
+  return strconv.Atoi(string(line[1:end]))
+}
+
 func (r *RESPReader) readArray(line []byte) ([]byte, error){
-  //pass
+  //Get number of array elements
+  count, err := r.getCount(line)
+  if err != nil {
+    return nil, err
+  }
+
+  // Read `count` number of RESP objects in the array.
+  for i := 0; i < count; i++ {
+    buf, err = r.ReadObject()
+    if err != nil {
+      return nil, err
+    }
+    line = append(line, buf)
+  }
+
+  return nil, err
 }
 
 func main() {
