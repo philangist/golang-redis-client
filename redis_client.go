@@ -81,11 +81,36 @@ func (r *RESPReader) ReadObject() ([]byte, error) {
 }
 
 func (r *RESPReader) readLine() (line []byte, err error){
-  //pass
+  line, err = r.ReadSlice('\n')
+  if err != nil {
+    return nil, err
+  }
+
+  if len(line) > 1 && line[len(line) - 2] == '\r' {
+    return line, nil
+  } else {
+    // Line was too short or newline wasn't preceded by carriage return
+    return nil, ErrInvalidSyntax
+  }
 }
 
 func (r *RESPReader) readBulkString(line []byte) ([]byte, error){
-  //pass
+  count, err := r.getCount(line)
+  if err != nil {
+    return nil, err
+  }
+  if count == -1 {
+    return line, nil
+  }
+
+  buf := make([]byte, len(line)+count+2)
+  copy(buf, line)
+  _, err = r.Read(buf[len(line):])
+  if err != nil {
+    return nil, err
+  }
+
+  return buf, nil
 }
 
 func (r *RESPReader) readArray(line []byte) ([]byte, error){
